@@ -25,3 +25,34 @@ output = { "1th":{"onsuccess":"2th"},
           "4bbb" : {},
           "7th" : {}
 }
+
+def traverse_tree_iteratively(node_id, input_data):
+    stack = [node_id]
+    visited = set()
+    ordered_nodes = []
+
+    while stack:
+        current_id = stack.pop()
+        if current_id in visited:
+            continue
+
+        visited.add(current_id)
+        node = input_data.get(current_id, {})
+        ordered_nodes.append((current_id, node))
+
+        if "onsuccess" in node:
+            stack.append(node["onsuccess"])
+        elif "ontrue" in node and "onfalse" in node:
+            stack.append(node["onfalse"])
+            stack.append(node["ontrue"])
+
+    return ordered_nodes
+
+# Start from the root (ID = "1th"), and pass input_data
+ordered_list_iterative = traverse_tree_iteratively("1th", input_data)
+
+# Convert the list of tuples back to a dictionary in the desired order
+ordered_dict_iterative = dict(ordered_list_iterative)
+
+# Print the resulting ordered dictionary
+print(ordered_dict_iterative)

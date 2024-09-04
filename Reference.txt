@@ -1,2 +1,27 @@
 Python Cheat sheet for pandas
 https://elitedatascience.com/python-cheat-sheet
+
+
+input= { "6th":{"ontrue":"6aaa","onfalse":"6bbb"},
+        "1th":{"onsuccess":"2th"},
+        "6aaa":{},
+        "4aaa" : {"onsuccess": "5th"},
+        "2th" : {"onsuccess": "3th"},
+        "7th" : {},
+        "3th" : {"ontrue": "4aaa", "onfalse":"4bbb"},
+        "5th" : {"onsuccess" : "6th"},
+        "6bbb": {"onsuccess" : "7th"},
+        "4bbb" : {}
+}
+
+output = { "1th":{"onsuccess":"2th"},
+          "2th" : {"onsuccess": "3th"},
+          "3th" : {"ontrue": "4aaa", "onfalse":"4bbb"},
+          "4aaa" : {"onsuccess": "5th"},
+          "5th" : {"onsuccess" : "6th"},
+          "6th":{"ontrue":"6aaa","onfalse":"6bbb"},
+          "6aaa":{},
+          "6bbb": {"onsuccess" : "7th"},
+          "4bbb" : {},
+          "7th" : {}
+}

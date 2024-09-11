@@ -56,3 +56,73 @@ ordered_dict_iterative = dict(ordered_list_iterative)
 
 # Print the resulting ordered dictionary
 print(ordered_dict_iterative)
+
+
+
+
+# Define the input dictionary
+input_data = {
+    "Yee0": {"id": "6th", "ontrue": {"ontrue": "6aaa"}, "onfalse": {"onfalse": "6bbb"}},
+    "Yee": {"id": "1th", "onsuccess": {"onsuccess": "2th"}, "type": "start"},
+    "Yee1": {"id": "6aaa"},
+    "Yee2": {"id": "4aaa", "onsuccess": {"onsuccess": "5th"}},
+    "Yee3": {"id": "2th", "onsuccess": {"onsuccess": "3th"}},
+    "Yee4": {"id": "7th", "type": "end"},
+    "Yee5": {"id": "3th", "ontrue": {"ontrue": "4aaa"}, "onfalse": {"onfalse": "4bbb"}},
+    "Yee6": {"id": "5th", "onsuccess": {"onsuccess": "6th"}},
+    "Yee7": {"id": "6bbb", "onsuccess": {"onsuccess": "7th"}},
+    "Yee8": {"id": "4bbb"}
+}
+
+# Function to find the start node
+def find_start_node(input_data):
+    for node_key, node in input_data.items():
+        if node.get("type") == "start":
+            return node_key
+    return None
+
+# Recursive function to traverse the tree
+def traverse_tree(node_key, input_data, visited=None):
+    if visited is None:
+        visited = set()
+
+    if node_key in visited:
+        return []  # Avoid cycles
+
+    visited.add(node_key)
+    node = input_data.get(node_key, {})
+    ordered_nodes = [(node_key, node)]  # Store the node in order
+
+    # Check for onsuccess, ontrue, onfalse and traverse accordingly
+    if "onsuccess" in node:
+        next_node_key = list(node["onsuccess"].values())[0]
+        ordered_nodes.extend(traverse_tree(next_node_key, input_data, visited))
+    elif "ontrue" in node and "onfalse" in node:
+        true_branch = list(node["ontrue"].values())[0]
+        false_branch = list(node["onfalse"].values())[0]
+        ordered_nodes.extend(traverse_tree(true_branch, input_data, visited.copy()))
+        ordered_nodes.extend(traverse_tree(false_branch, input_data, visited.copy()))
+
+    return ordered_nodes
+
+# Start from the root (identified by type: "start")
+start_node_key = find_start_node(input_data)
+ordered_list = traverse_tree(start_node_key, input_data)
+
+# Convert the list of tuples back to a dictionary in the desired order
+ordered_dict = {node_key: node_data for node_key, node_data in ordered_list}
+
+# Ensure the end node is placed at the end
+end_node_key = None
+for node_key, node in input_data.items():
+    if node.get("type") == "end":
+        end_node_key = node_key
+        break
+
+if end_node_key:
+    ordered_dict.pop(end_node_key, None)  # Remove if already present
+    ordered_dict[end_node_key] = input_data[end_node_key]  # Add at the end
+
+# Print the ordered dictionary
+for key, value in ordered_dict.items():
+    print(f"{key}: {value}")

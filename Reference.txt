@@ -2,62 +2,6 @@ Python Cheat sheet for pandas
 https://elitedatascience.com/python-cheat-sheet
 
 
-input= { "6th":{"ontrue":"6aaa","onfalse":"6bbb"},
-        "1th":{"onsuccess":"2th"},
-        "6aaa":{},
-        "4aaa" : {"onsuccess": "5th"},
-        "2th" : {"onsuccess": "3th"},
-        "7th" : {},
-        "3th" : {"ontrue": "4aaa", "onfalse":"4bbb"},
-        "5th" : {"onsuccess" : "6th"},
-        "6bbb": {"onsuccess" : "7th"},
-        "4bbb" : {}
-}
-
-output = { "1th":{"onsuccess":"2th"},
-          "2th" : {"onsuccess": "3th"},
-          "3th" : {"ontrue": "4aaa", "onfalse":"4bbb"},
-          "4aaa" : {"onsuccess": "5th"},
-          "5th" : {"onsuccess" : "6th"},
-          "6th":{"ontrue":"6aaa","onfalse":"6bbb"},
-          "6aaa":{},
-          "6bbb": {"onsuccess" : "7th"},
-          "4bbb" : {},
-          "7th" : {}
-}
-
-def traverse_tree_iteratively(node_id, input_data):
-    stack = [node_id]
-    visited = set()
-    ordered_nodes = []
-
-    while stack:
-        current_id = stack.pop()
-        if current_id in visited:
-            continue
-
-        visited.add(current_id)
-        node = input_data.get(current_id, {})
-        ordered_nodes.append((current_id, node))
-
-        if "onsuccess" in node:
-            stack.append(node["onsuccess"])
-        elif "ontrue" in node and "onfalse" in node:
-            stack.append(node["onfalse"])
-            stack.append(node["ontrue"])
-
-    return ordered_nodes
-
-# Start from the root (ID = "1th"), and pass input_data
-ordered_list_iterative = traverse_tree_iteratively("1th", input_data)
-
-# Convert the list of tuples back to a dictionary in the desired order
-ordered_dict_iterative = dict(ordered_list_iterative)
-
-# Print the resulting ordered dictionary
-print(ordered_dict_iterative)
-
-
 
 
 # Define the input dictionary
@@ -97,11 +41,13 @@ def traverse_tree(node_key, input_data, visited=None):
     if "onsuccess" in node:
         next_node_key = list(node["onsuccess"].values())[0]
         ordered_nodes.extend(traverse_tree(next_node_key, input_data, visited))
-    elif "ontrue" in node and "onfalse" in node:
-        true_branch = list(node["ontrue"].values())[0]
-        false_branch = list(node["onfalse"].values())[0]
-        ordered_nodes.extend(traverse_tree(true_branch, input_data, visited.copy()))
-        ordered_nodes.extend(traverse_tree(false_branch, input_data, visited.copy()))
+    elif "ontrue" in node or "onfalse" in node:
+        if "ontrue" in node:
+            true_branch = list(node["ontrue"].values())[0]
+            ordered_nodes.extend(traverse_tree(true_branch, input_data, visited.copy()))
+        if "onfalse" in node:
+            false_branch = list(node["onfalse"].values())[0]
+            ordered_nodes.extend(traverse_tree(false_branch, input_data, visited.copy()))
 
     return ordered_nodes
 
